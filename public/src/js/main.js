@@ -1,41 +1,60 @@
 
 
 
+
+
 (function() {
   'use strict';
 
   // ** TODO - firestoreに接続してデータを取得する処理
   console.log("初期処理");
  
-  db.collection("chat-app")
-  .orderBy("date", "desc")
+  // db.collection("chat-app")
+  // .orderBy("date", "desc")
   
-  .get()
-  .then(function(querySnapshot) {
-      querySnapshot.forEach(function(doc) {
-          // doc.data() is never undefined for query doc snapshots
-          console.log(doc.id, " => ", doc.data());
+  // .onSnapshot(function(querySnapshot) {
+  //     querySnapshot.forEach(function(doc) {
+  //         // doc.data() is never undefined for query doc snapshots
+  //         console.log(doc.id, " => ", doc.data());
           
           
-          $('#comment').append(
-            `
-            <div class="ui floating message">
-              <div class="header"style="margin-bottom:0.4rem;">`+(doc.data().name)+`
-              </div>
-              <div style="word-wrap: break-word;">
-              `+(doc.data().tweet)+`</div >
-              `+(doc.data().date)+`
-            </div>
-            `)
+  //         $('#comment').append(
+  //           `
+  //           <div class="ui floating message">
+  //             <div class="header"style="margin-bottom:0.4rem;">`+(doc.data().name)+`
+  //             </div>
+  //             <div style="word-wrap: break-word;">
+  //             `+(doc.data().tweet)+`</div >
+  //             `+(doc.data().date)+`
+  //           </div>
+  //           `)
          
+  //     });
+  // })
+  // .catch(function(error) {
+  //     console.log("Error getting documents: ", error);
+  // });
 
+  db.collection('chat-app')
+    .orderBy('date', 'desc')
+    .limit(100)
+    .onSnapshot(ss => {
+      // console.log(ss);
+      $('#comment').empty();
+      ss.forEach(doc => {
+        const data = doc.data();
+        $('#comment').append(
+          `
+          <div class="ui floating message">
+            <div class="header"style="margin-bottom:0.4rem;">`+(data.name)+`
+            </div>
+            <div style="word-wrap: break-word;">
+            `+(data.tweet)+`</div >
+            `+(data.date)+`
+          </div>
+          `)
       });
-  })
-  .catch(function(error) {
-      console.log("Error getting documents: ", error);
-  });
-
-
+    });
 
   // ** 送信ボタンを押す処理
   $('#submit').on('click', function() {
@@ -52,18 +71,23 @@
       alert(`何か一言書いてください`)
       return;
     }
+    if(tweet.length>200){
+      alert(`200文字以内です`)
+      return;
+    }
 
+    // $('#comment').append(
+    //   `
+    //   <div class="ui floating message">
+    //     <div class="header"style="margin-bottom:0.4rem;">`+(name)+`
+    //     </div>
+    //     <div style="word-wrap: break-word;">
+    //     `+(tweet)+`</div >
+    //   </div>
+    //   `)
+// Create a root reference
 
-    $('#comment').append(
-      `
-      <div class="ui floating message">
-        <div class="header"style="margin-bottom:0.4rem;">`+(name)+`
-        </div>
-        <div style="word-wrap: break-word;">
-        `+(tweet)+`</div >
-      </div>
-      `)
-
+      
 
     var m = moment(); //現在の時刻が入る
     var output = m.format('YYYY年MM月DD日 HH:mm:ss');
@@ -101,20 +125,9 @@
   
   
     console.log('一言に何か呟かれています');
-    function greet() {
-      console.count( user);
-      return "hi " +  user;
-    }
-    
-    var  user = "bob";
-    greet();
-    user = "alice";
-    greet();
-    greet();
-    console.count("alice");
-    
-      
-    		
+    var tweet = $('#tweet').val();
+    $("#counter").html(tweet.length+"文字")
+   
     
   });
 })();
